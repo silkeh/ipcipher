@@ -10,7 +10,6 @@ import (
 	"errors"
 	"net"
 
-	"github.com/silkeh/ipcipher/ipcrypt"
 	"golang.org/x/crypto/pbkdf2"
 )
 
@@ -43,7 +42,7 @@ func NewKeyFromPassword(p string) (k *Key) {
 // Encrypt an IP address.
 func Encrypt(key *Key, ip net.IP) (net.IP, error) {
 	if ip.To4() != nil {
-		return EncryptIPv4(key, ip)
+		return EncryptIPv4(key, ip), nil
 	}
 	if ip.To16() != nil {
 		return EncryptIPv6(key, ip)
@@ -54,22 +53,12 @@ func Encrypt(key *Key, ip net.IP) (net.IP, error) {
 // Decrypt an IP address.
 func Decrypt(key *Key, ip net.IP) (net.IP, error) {
 	if ip.To4() != nil {
-		return DecryptIPv4(key, ip)
+		return DecryptIPv4(key, ip), nil
 	}
 	if ip.To16() != nil {
 		return DecryptIPv6(key, ip)
 	}
 	return nil, errors.New("decrypt: invalid IP address")
-}
-
-// EncryptIPv4 encrypts an IPv4 address.
-func EncryptIPv4(key *Key, ip net.IP) (net.IP, error) {
-	return ipcrypt.Encrypt((*[16]byte)(key), ip), nil
-}
-
-// DecryptIPv4 encrypts an IPv4 address.
-func DecryptIPv4(key *Key, ip net.IP) (net.IP, error) {
-	return ipcrypt.Decrypt((*[16]byte)(key), ip), nil
 }
 
 // EncryptIPv6 encrypts an IPv6 address.

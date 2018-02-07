@@ -1,4 +1,4 @@
-package ipcrypt
+package ipcipher
 
 import (
 	"net"
@@ -7,17 +7,17 @@ import (
 
 var (
 	ip  = net.IPv4zero
-	key = new([16]byte)
+	key = new(Key)
 )
 
 func BenchmarkEncrypt(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		ip = Encrypt(key, ip)
+		ip = EncryptIPv4(key, ip)
 	}
 }
 
 func BenchmarkDecrypt(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		ip = Decrypt(key, ip)
+		ip = DecryptIPv4(key, ip)
 	}
 }

@@ -1,8 +1,6 @@
-// Package ipcrypt is based on the ipcrypt program by JP Aumasson.
+// This file is based on the ipcrypt program by JP Aumasson.
 // See: https://github.com/veorq/ipcrypt
-package ipcrypt
-
-// see also https://github.com/dgryski/go-ipcrypt/
+package ipcipher
 
 import (
 	"net"
@@ -56,8 +54,6 @@ func permuteBwd(state *[4]byte) {
 	d = rotl(d, 3)
 	a -= b
 	c -= d
-	a &= 0xff
-	c &= 0xff
 	state[0] = a
 	state[1] = b
 	state[2] = c
@@ -70,9 +66,9 @@ func xor4(x *[4]byte, y []byte) {
 	}
 }
 
-// Encrypt an IPv4 address using a 16 byte key.
+// EncryptIPv4 encrypts an IPv4 address with a 16 byte key using the ipcrypt cipher.
 // The IP address is not validated beforehand.
-func Encrypt(k *[16]byte, ip net.IP) net.IP {
+func EncryptIPv4(k *Key, ip net.IP) net.IP {
 	state := new([4]byte)
 	copy(state[:], ip.To4())
 
@@ -87,9 +83,9 @@ func Encrypt(k *[16]byte, ip net.IP) net.IP {
 	return state[:]
 }
 
-// Decrypt an IPv4 address using a 16 byte key.
+// DecryptIPv4 decrypts an IPv4 address with a 16 byte key using the ipcrypt cipher.
 // The IP address is not validated beforehand.
-func Decrypt(k *[16]byte, ip net.IP) net.IP {
+func DecryptIPv4(k *Key, ip net.IP) net.IP {
 	state := new([4]byte)
 	copy(state[:], ip.To4())
 
