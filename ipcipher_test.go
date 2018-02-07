@@ -41,7 +41,7 @@ func TestKeyGeneration(t *testing.T) {
 	for str, key := range keyTestVectors {
 		k := NewKeyFromPassword(str)
 		if !bytes.Equal(k[:], key) {
-			t.Fatalf("Invalid key for string %q, got:\n% x, expected:\n% x", str, k[:], key)
+			t.Errorf("Invalid key for string %q, got:\n% x, expected:\n% x", str, k[:], key)
 		}
 	}
 }
@@ -51,7 +51,7 @@ func TestEncrypt(t *testing.T) {
 		for in, out := range ips {
 			o, _ := Encrypt(key, net.ParseIP(in))
 			if !bytes.Equal(o, net.ParseIP(out)) {
-				t.Fatalf("Invalid IP conversion for key %x, ip %s, expected: %s, got %s", key[:], in, out, o)
+				t.Errorf("Invalid IP conversion for key %x, ip %s, expected: %s, got %s", key[:], in, out, o)
 			}
 		}
 	}
@@ -62,7 +62,7 @@ func TestDecrypt(t *testing.T) {
 		for out, in := range ips {
 			o, _ := Decrypt(key, net.ParseIP(in))
 			if !bytes.Equal(o, net.ParseIP(out)) {
-				t.Fatalf("Invalid IP conversion for key %x, ip %s, expected: %s, got %s", key[:], in, out, o)
+				t.Errorf("Invalid IP conversion for key %x, ip %s, expected: %s, got %s", key[:], in, out, o)
 			}
 		}
 	}
