@@ -13,7 +13,7 @@ var keyTestVectors = map[string][]byte{
 }
 
 var testVectors = map[*Key]map[string]string{
-	&Key{'s', 'o', 'm', 'e', ' ', '1', '6', '-', 'b', 'y', 't', 'e', ' ', 'k', 'e', 'y'}: {
+	{'s', 'o', 'm', 'e', ' ', '1', '6', '-', 'b', 'y', 't', 'e', ' ', 'k', 'e', 'y'}: {
 		"127.0.0.1": "114.62.227.59",
 		"8.8.8.8":   "46.48.51.50",
 		"1.2.3.4":   "171.238.15.199",
@@ -32,7 +32,7 @@ var testVectors = map[*Key]map[string]string{
 }
 
 var megaTestVectors = map[*Key]map[string]string{
-	&Key{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16}: {
+	{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16}: {
 		"192.168.69.42": "93.155.197.186",
 	},
 }
