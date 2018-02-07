@@ -48,7 +48,7 @@ func Encrypt(key *Key, ip net.IP) (net.IP, error) {
 	if ip.To16() != nil {
 		return EncryptIPv6(key, ip)
 	}
-	return nil, errors.New("invalid IP address")
+	return nil, errors.New("encrypt: invalid IP address")
 }
 
 // Decrypt an IP address.
@@ -59,17 +59,17 @@ func Decrypt(key *Key, ip net.IP) (net.IP, error) {
 	if ip.To16() != nil {
 		return DecryptIPv6(key, ip)
 	}
-	return nil, errors.New("invalid IP address")
+	return nil, errors.New("decrypt: invalid IP address")
 }
 
 // EncryptIPv4 encrypts an IPv4 address.
 func EncryptIPv4(key *Key, ip net.IP) (net.IP, error) {
-	return ipcrypt.Encrypt((*[16]byte)(key), ip)
+	return ipcrypt.Encrypt((*[16]byte)(key), ip), nil
 }
 
 // DecryptIPv4 encrypts an IPv4 address.
 func DecryptIPv4(key *Key, ip net.IP) (net.IP, error) {
-	return ipcrypt.Decrypt((*[16]byte)(key), ip)
+	return ipcrypt.Decrypt((*[16]byte)(key), ip), nil
 }
 
 // EncryptIPv6 encrypts an IPv6 address.
