@@ -3,12 +3,12 @@
 package ipcipher
 
 import (
-	"crypto/rand"
-	"net"
 	"crypto/aes"
+	"crypto/rand"
 	"crypto/sha1"
 	"crypto/subtle"
 	"errors"
+	"net"
 
 	"github.com/silkeh/ipcipher/ipcrypt"
 	"golang.org/x/crypto/pbkdf2"
@@ -64,20 +64,12 @@ func Decrypt(key *Key, ip net.IP) (net.IP, error) {
 
 // EncryptIPv4 encrypts an IPv4 address.
 func EncryptIPv4(key *Key, ip net.IP) (net.IP, error) {
-	a, err := ipcrypt.Encrypt(*key, ip.String())
-	if err != nil {
-		return nil, err
-	}
-	return net.ParseIP(a), nil
+	return ipcrypt.Encrypt((*[16]byte)(key), ip)
 }
 
 // DecryptIPv4 encrypts an IPv4 address.
 func DecryptIPv4(key *Key, ip net.IP) (net.IP, error) {
-	a, err := ipcrypt.Decrypt(*key, ip.String())
-	if err != nil {
-		return nil, err
-	}
-	return net.ParseIP(a), nil
+	return ipcrypt.Decrypt((*[16]byte)(key), ip)
 }
 
 // EncryptIPv6 encrypts an IPv6 address.

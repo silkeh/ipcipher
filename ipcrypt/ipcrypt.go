@@ -7,15 +7,13 @@ package ipcrypt
 import (
 	"errors"
 	"net"
-	"strconv"
-	"strings"
 )
 
 func rotl(x, c byte) byte {
 	return (x << c) | (x >> (8 - c))
 }
 
-func permute_fwd(state [4]byte) [4]byte {
+func permute_fwd(state *[4]byte) *[4]byte {
 	a := state[0]
 	b := state[1]
 	c := state[2]
@@ -38,10 +36,10 @@ func permute_fwd(state [4]byte) [4]byte {
 	b ^= c
 	d ^= a
 	c = rotl(c, 4)
-	return [4]byte{a, b, c, d}
+	return &[4]byte{a, b, c, d}
 }
 
-func permute_bwd(state [4]byte) [4]byte {
+func permute_bwd(state *[4]byte) *[4]byte {
 	a := state[0]
 	b := state[1]
 	c := state[2]
@@ -64,28 +62,19 @@ func permute_bwd(state [4]byte) [4]byte {
 	c -= d
 	a &= 0xff
 	c &= 0xff
-	return [4]byte{a, b, c, d}
+	return &[4]byte{a, b, c, d}
 }
 
-func xor4(x [4]byte, y []byte) [4]byte {
-	return [4]byte{x[0] ^ y[0], x[1] ^ y[1], x[2] ^ y[2], x[3] ^ y[3]}
+func xor4(x *[4]byte, y []byte) *[4]byte {
+	return &[4]byte{x[0] ^ y[0], x[1] ^ y[1], x[2] ^ y[2], x[3] ^ y[3]}
 }
 
-func bytes2ip(bytes [4]byte) string {
-	ipaddr := []string{"", "", "", ""}
-	ipaddr[0] = strconv.Itoa(int(bytes[0]))
-	ipaddr[1] = strconv.Itoa(int(bytes[1]))
-	ipaddr[2] = strconv.Itoa(int(bytes[2]))
-	ipaddr[3] = strconv.Itoa(int(bytes[3]))
-	return strings.Join(ipaddr, ".")
-}
-
-func Encrypt(k [16]byte, ip string) (string, error) {
-	p := net.ParseIP(ip)
+func Encrypt(k *[16]byte, ip net.IP) (net.IP, error) {
+	p := ip.To4()
 	if p == nil {
-		return "", errors.New("encrypt: invalid IP")
+		return nil, errors.New("encrypt: invalid IPv4 address")
 	}
-	state := [4]byte{p[12], p[13], p[14], p[15]}
+	state := &[4]byte{p[0], p[1], p[2], p[3]}
 
 	state = xor4(state, k[:4])
 	state = permute_fwd(state)
@@ -95,15 +84,15 @@ func Encrypt(k [16]byte, ip string) (string, error) {
 	state = permute_fwd(state)
 	state = xor4(state, k[12:16])
 
-	return bytes2ip(state), nil
+	return state[:], nil
 }
 
-func Decrypt(k [16]byte, ip string) (string, error) {
-	p := net.ParseIP(ip)
+func Decrypt(k *[16]byte, ip net.IP) (net.IP, error) {
+	p := ip.To4()
 	if p == nil {
-		return "", errors.New("encrypt: invalid IP")
+		return nil, errors.New("decrypt: invalid IPv4 address")
 	}
-	state := [4]byte{p[12], p[13], p[14], p[15]}
+	state := &[4]byte{p[0], p[1], p[2], p[3]}
 
 	state = xor4(state, k[12:16])
 	state = permute_bwd(state)
@@ -113,5 +102,5 @@ func Decrypt(k [16]byte, ip string) (string, error) {
 	state = permute_bwd(state)
 	state = xor4(state, k[:4])
 
-	return bytes2ip(state), nil
+	return state[:], nil
 }
