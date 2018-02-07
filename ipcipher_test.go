@@ -73,7 +73,21 @@ func TestEncryptMega(t *testing.T) {
 		for in, out := range ips {
 			o := net.ParseIP(in)
 			for i := 0; i < 100000000; i++ {
-				o, _ = EncryptIPv4(key, o)
+				o, _ = Encrypt(key, o)
+			}
+			if !net.ParseIP(out).Equal(o) {
+				t.Fatalf("Encryption failed for key % x; ip %s; expected %s; got %s", key[:], in, out, o)
+			}
+		}
+	}
+}
+
+func TestDecryptMega(t *testing.T) {
+	for key, ips := range megaTestVectors {
+		for out, in := range ips {
+			o := net.ParseIP(in)
+			for i := 0; i < 100000000; i++ {
+				o, _ = Decrypt(key, o)
 			}
 			if !net.ParseIP(out).Equal(o) {
 				t.Fatalf("Encryption failed for key % x; ip %s; expected %s; got %s", key[:], in, out, o)
