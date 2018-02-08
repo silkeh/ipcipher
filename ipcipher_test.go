@@ -37,12 +37,30 @@ var megaTestVectors = map[*Key]map[string]string{
 	},
 }
 
-func TestKeyGeneration(t *testing.T) {
+func TestNewKey(t *testing.T) {
+	z := make([]byte, 16)
+	n := NewKey()
+	if bytes.Equal(z, n[:]) {
+		t.Errorf("Generated random key is zero")
+	}
+}
+
+func TestNewKeyFromPassword(t *testing.T) {
 	for str, key := range keyTestVectors {
 		k := NewKeyFromPassword(str)
 		if !bytes.Equal(k[:], key) {
 			t.Errorf("Invalid key for string %q, got:\n% x, expected:\n% x", str, k[:], key)
 		}
+	}
+}
+
+func TestInvalidIPAddress(t *testing.T) {
+	ip = make([]byte, 3)
+	if err := Encrypt(key, ip, ip); err == nil {
+		t.Errorf("Expected encrypt error for invalid IP address %x", ip)
+	}
+	if err := Decrypt(key, ip, ip); err == nil {
+		t.Errorf("Expected decrypt error for invalid IP address %x", ip)
 	}
 }
 

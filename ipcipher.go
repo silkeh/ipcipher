@@ -31,7 +31,6 @@ func NewKey() (k *Key) {
 
 // NewKeyFromPassword derives a key from a password.
 // TODO: look into doing this without copy
-// TODO: zero original byte slice
 func NewKeyFromPassword(p string) (k *Key) {
 	k = new(Key)
 	b := pbkdf2.Key([]byte(p), []byte(Salt), 50000, 16, sha1.New)
@@ -67,20 +66,14 @@ func Decrypt(key *Key, dst, src net.IP) error {
 
 // EncryptIPv6 encrypts an IPv6 address.
 func EncryptIPv6(key *Key, dst, src net.IP) (err error) {
-	c, err := aes.NewCipher(key[:])
-	if err != nil {
-		return err
-	}
+	c, _ := aes.NewCipher(key[:])
 	c.Encrypt(dst, src)
 	return nil
 }
 
 // DecryptIPv6 decrypts an IPv6 address.
 func DecryptIPv6(key *Key, dst, src net.IP) (err error) {
-	c, err := aes.NewCipher(key[:])
-	if err != nil {
-		return err
-	}
+	c, _ := aes.NewCipher(key[:])
 	c.Decrypt(dst, src)
 	return nil
 }
