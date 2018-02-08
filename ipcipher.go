@@ -40,45 +40,47 @@ func NewKeyFromPassword(p string) (k *Key) {
 }
 
 // Encrypt an IP address.
-func Encrypt(key *Key, ip net.IP) (net.IP, error) {
-	if ip.To4() != nil {
-		return EncryptIPv4(key, ip), nil
+func Encrypt(key *Key, dst, src net.IP) error {
+	if ip4 := src.To4(); ip4 != nil {
+		EncryptIPv4(key, dst.To4(), ip4)
+		return nil
 	}
-	if ip.To16() != nil {
-		return EncryptIPv6(key, ip)
+	if src.To16() != nil {
+		EncryptIPv6(key, dst, src)
+		return nil
 	}
-	return nil, errors.New("encrypt: invalid IP address")
+	return errors.New("encrypt: invalid IP address")
 }
 
 // Decrypt an IP address.
-func Decrypt(key *Key, ip net.IP) (net.IP, error) {
-	if ip.To4() != nil {
-		return DecryptIPv4(key, ip), nil
+func Decrypt(key *Key, dst, src net.IP) error {
+	if ip4 := src.To4(); ip4 != nil {
+		DecryptIPv4(key, dst.To4(), ip4)
+		return nil
 	}
-	if ip.To16() != nil {
-		return DecryptIPv6(key, ip)
+	if src.To16() != nil {
+		DecryptIPv6(key, dst, src)
+		return nil
 	}
-	return nil, errors.New("decrypt: invalid IP address")
+	return errors.New("decrypt: invalid IP address")
 }
 
 // EncryptIPv6 encrypts an IPv6 address.
-func EncryptIPv6(key *Key, ip net.IP) (out net.IP, err error) {
+func EncryptIPv6(key *Key, dst, src net.IP) (err error) {
 	c, err := aes.NewCipher(key[:])
 	if err != nil {
-		return nil, err
+		return err
 	}
-	o := net.IPv6unspecified
-	c.Encrypt(o, ip)
-	return o, nil
+	c.Encrypt(dst, src)
+	return nil
 }
 
 // DecryptIPv6 decrypts an IPv6 address.
-func DecryptIPv6(key *Key, ip net.IP) (out net.IP, err error) {
+func DecryptIPv6(key *Key, dst, src net.IP) (err error) {
 	c, err := aes.NewCipher(key[:])
 	if err != nil {
-		return nil, err
+		return err
 	}
-	o := net.IPv6unspecified
-	c.Decrypt(o, ip)
-	return o, nil
+	c.Decrypt(dst, src)
+	return nil
 }

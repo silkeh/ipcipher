@@ -1,6 +1,7 @@
+package ipcipher
+
 // This file is based on the ipcrypt program by JP Aumasson.
 // See: https://github.com/veorq/ipcrypt
-package ipcipher
 
 import (
 	"net"
@@ -10,7 +11,7 @@ func rotl(x, c byte) byte {
 	return (x << c) | (x >> (8 - c))
 }
 
-func permuteFwd(state *[4]byte) {
+func permuteFwd(state []byte) {
 	a := state[0]
 	b := state[1]
 	c := state[2]
@@ -35,7 +36,7 @@ func permuteFwd(state *[4]byte) {
 	state[3] = d
 }
 
-func permuteBwd(state *[4]byte) {
+func permuteBwd(state []byte) {
 	a := state[0]
 	b := state[1]
 	c := state[2]
@@ -60,43 +61,33 @@ func permuteBwd(state *[4]byte) {
 	state[3] = d
 }
 
-func xor4(x *[4]byte, y []byte) {
-	x[0] ^= y[0]
-	x[1] ^= y[1]
-	x[2] ^= y[2]
-	x[3] ^= y[3]
+func xor4(d, x, y []byte) {
+	d[0] = x[0] ^ y[0]
+	d[1] = x[1] ^ y[1]
+	d[2] = x[2] ^ y[2]
+	d[3] = x[3] ^ y[3]
 }
 
 // EncryptIPv4 encrypts an IPv4 address with a 16 byte key using the ipcrypt cipher.
-// The IP address is not validated beforehand.
-func EncryptIPv4(k *Key, ip net.IP) net.IP {
-	state := new([4]byte)
-	copy(state[:], ip.To4())
-
-	xor4(state, k[:4])
-	permuteFwd(state)
-	xor4(state, k[4:8])
-	permuteFwd(state)
-	xor4(state, k[8:12])
-	permuteFwd(state)
-	xor4(state, k[12:16])
-
-	return state[:]
+// The IP address is not validated or converted with net.IP.To4() beforehand.
+func EncryptIPv4(k *Key, dst, src net.IP) {
+	xor4(dst, src, k[:4])
+	permuteFwd(dst)
+	xor4(dst, dst, k[4:8])
+	permuteFwd(dst)
+	xor4(dst, dst, k[8:12])
+	permuteFwd(dst)
+	xor4(dst, dst, k[12:16])
 }
 
 // DecryptIPv4 decrypts an IPv4 address with a 16 byte key using the ipcrypt cipher.
-// The IP address is not validated beforehand.
-func DecryptIPv4(k *Key, ip net.IP) net.IP {
-	state := new([4]byte)
-	copy(state[:], ip.To4())
-
-	xor4(state, k[12:16])
-	permuteBwd(state)
-	xor4(state, k[8:12])
-	permuteBwd(state)
-	xor4(state, k[4:8])
-	permuteBwd(state)
-	xor4(state, k[:4])
-
-	return state[:]
+// The IP address is not validated or converted with net.IP.To4() beforehand.
+func DecryptIPv4(k *Key, dst, src net.IP) {
+	xor4(dst, src, k[12:16])
+	permuteBwd(dst)
+	xor4(dst, dst, k[8:12])
+	permuteBwd(dst)
+	xor4(dst, dst, k[4:8])
+	permuteBwd(dst)
+	xor4(dst, dst, k[:4])
 }

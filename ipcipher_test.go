@@ -49,7 +49,8 @@ func TestKeyGeneration(t *testing.T) {
 func TestEncrypt(t *testing.T) {
 	for key, ips := range testVectors {
 		for in, out := range ips {
-			o, _ := Encrypt(key, net.ParseIP(in))
+			o := net.ParseIP(in)
+			Encrypt(key, o, o)
 			if !net.ParseIP(out).Equal(o) {
 				t.Errorf("Invalid IP conversion for key %x, ip %s, expected: %s, got %s", key[:], in, out, o)
 			}
@@ -60,7 +61,8 @@ func TestEncrypt(t *testing.T) {
 func TestDecrypt(t *testing.T) {
 	for key, ips := range testVectors {
 		for out, in := range ips {
-			o, _ := Decrypt(key, net.ParseIP(in))
+			o := net.ParseIP(in)
+			Decrypt(key, o, o)
 			if !net.ParseIP(out).Equal(o) {
 				t.Errorf("Invalid IP conversion for key %x, ip %s, expected: %s, got %s", key[:], in, out, o)
 			}
@@ -73,7 +75,7 @@ func TestEncryptMega(t *testing.T) {
 		for in, out := range ips {
 			o := net.ParseIP(in)
 			for i := 0; i < 100000000; i++ {
-				o, _ = Encrypt(key, o)
+				Encrypt(key, o, o)
 			}
 			if !net.ParseIP(out).Equal(o) {
 				t.Fatalf("Encryption failed for key % x; ip %s; expected %s; got %s", key[:], in, out, o)
@@ -87,7 +89,7 @@ func TestDecryptMega(t *testing.T) {
 		for out, in := range ips {
 			o := net.ParseIP(in)
 			for i := 0; i < 100000000; i++ {
-				o, _ = Decrypt(key, o)
+				Decrypt(key, o, o)
 			}
 			if !net.ParseIP(out).Equal(o) {
 				t.Fatalf("Encryption failed for key % x; ip %s; expected %s; got %s", key[:], in, out, o)
