@@ -2,6 +2,7 @@ package ipcipher
 
 import (
 	"bytes"
+	"crypto/rand"
 	"net"
 	"testing"
 )
@@ -21,7 +22,7 @@ var testVectors = map[*Key]map[string]string{
 		"2001:503:ba3e::2:30": "64d2:883d:ffb5:dd79:24b:943c:22aa:4ae7",
 		"2001:DB8::":          "ce7e:7e39:d282:e7b1:1d6d:5ca1:d4de:246f",
 	},
-	NewKeyFromPassword("crypto is not a coin"): {
+	GenerateKeyFromPassword("crypto is not a coin"): {
 		"198.41.0.4":    "139.111.117.167",
 		"130.161.180.1": "66.235.221.231",
 		"0.0.0.0":       "203.253.152.187",
@@ -39,7 +40,7 @@ var megaTestVectors = map[*Key]map[string]string{
 
 func TestNewKey(t *testing.T) {
 	z := make([]byte, 16)
-	n := NewKey()
+	n := GenerateKey(rand.Reader)
 	if bytes.Equal(z, n[:]) {
 		t.Errorf("Generated random key is zero")
 	}
@@ -47,7 +48,7 @@ func TestNewKey(t *testing.T) {
 
 func TestNewKeyFromPassword(t *testing.T) {
 	for str, key := range keyTestVectors {
-		k := NewKeyFromPassword(str)
+		k := GenerateKeyFromPassword(str)
 		if !bytes.Equal(k[:], key) {
 			t.Errorf("Invalid key for string %q, got:\n% x, expected:\n% x", str, k[:], key)
 		}

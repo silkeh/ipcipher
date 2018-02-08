@@ -4,10 +4,10 @@ package ipcipher
 
 import (
 	"crypto/aes"
-	"crypto/rand"
 	"crypto/sha1"
 	"crypto/subtle"
 	"errors"
+	"io"
 	"net"
 
 	"golang.org/x/crypto/pbkdf2"
@@ -19,8 +19,8 @@ const Salt = "ipcipheripcipher"
 // Key represents a key used for encrypting and decrypting IP addresses.
 type Key [16]byte
 
-// NewKey generates a completely random key.
-func NewKey() (k *Key) {
+// GenerateKey generates a completely random key.
+func GenerateKey(rand io.Reader) (k *Key) {
 	k = new(Key)
 	_, err := rand.Read(k[:])
 	if err != nil {
@@ -29,9 +29,9 @@ func NewKey() (k *Key) {
 	return
 }
 
-// NewKeyFromPassword derives a key from a password.
+// GenerateKeyFromPassword derives a key from a password.
 // TODO: look into doing this without copy
-func NewKeyFromPassword(p string) (k *Key) {
+func GenerateKeyFromPassword(p string) (k *Key) {
 	k = new(Key)
 	b := pbkdf2.Key([]byte(p), []byte(Salt), 50000, 16, sha1.New)
 	subtle.ConstantTimeCopy(1, k[:], b[:])
