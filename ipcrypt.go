@@ -70,6 +70,7 @@ func xor4(d, x, y []byte) {
 
 // EncryptIPv4 encrypts an IPv4 address with a 16 byte key using the ipcrypt cipher.
 // The IP address is not validated or converted with net.IP.To4() beforehand.
+// Dst and src may point at the same memory for in-place encryption.
 func EncryptIPv4(k *Key, dst, src net.IP) {
 	xor4(dst, src, k[:4])
 	permuteFwd(dst)
@@ -82,6 +83,7 @@ func EncryptIPv4(k *Key, dst, src net.IP) {
 
 // DecryptIPv4 decrypts an IPv4 address with a 16 byte key using the ipcrypt cipher.
 // The IP address is not validated or converted with net.IP.To4() beforehand.
+// Dst and src may point at the same memory for in-place decryption.
 func DecryptIPv4(k *Key, dst, src net.IP) {
 	xor4(dst, src, k[12:16])
 	permuteBwd(dst)

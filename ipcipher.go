@@ -1,5 +1,11 @@
-// Package ipcipher implements the ipcipher specification.
-// See: https://github.com/PowerDNS/ipcipher
+// Package ipcipher implements the ipcipher specification,
+// which can be used for encrypting and decrypting IP addresses.
+//
+// The package provides simple Encrypt and Decrypt functions, as well as a block.Cipher.
+// Using block.Cipher significantly speeds up encryption of IPv6 addresses.
+//
+// For more information on the ipcipher specification, see:
+// https://powerdns.org/ipcipher/ipcipher.md.html
 package ipcipher
 
 import (
@@ -39,6 +45,9 @@ func GenerateKeyFromPassword(p string) (k *Key) {
 }
 
 // Encrypt an IP address.
+// The provided IP address is validated and encrypted using the correct method.
+// This adds some overhead which can be avoided by using EncryptIPv4 and EncryptIPv6 directly.
+// Dst and src may point at the same memory for in-place encryption.
 func Encrypt(key *Key, dst, src net.IP) error {
 	if ip4 := src.To4(); ip4 != nil {
 		EncryptIPv4(key, dst.To4(), ip4)
@@ -52,6 +61,9 @@ func Encrypt(key *Key, dst, src net.IP) error {
 }
 
 // Decrypt an IP address.
+// The provided IP address is validated and decrypted using the correct method.
+// This adds some overhead which can be avoided by using EncryptIPv4 or EncryptIPv6 directly.
+// Dst and src may point at the same memory for in-place decryption.
 func Decrypt(key *Key, dst, src net.IP) error {
 	if ip4 := src.To4(); ip4 != nil {
 		DecryptIPv4(key, dst.To4(), ip4)
@@ -65,6 +77,8 @@ func Decrypt(key *Key, dst, src net.IP) error {
 }
 
 // EncryptIPv6 encrypts an IPv6 address.
+// The IP address is not validated beforehand.
+// Dst and src may point at the same memory for in-place encryption.
 func EncryptIPv6(key *Key, dst, src net.IP) (err error) {
 	c, _ := aes.NewCipher(key[:])
 	c.Encrypt(dst, src)
@@ -72,6 +86,8 @@ func EncryptIPv6(key *Key, dst, src net.IP) (err error) {
 }
 
 // DecryptIPv6 decrypts an IPv6 address.
+// The IP address is not validated beforehand.
+// Dst and src may point at the same memory for in-place decryption.
 func DecryptIPv6(key *Key, dst, src net.IP) (err error) {
 	c, _ := aes.NewCipher(key[:])
 	c.Decrypt(dst, src)
