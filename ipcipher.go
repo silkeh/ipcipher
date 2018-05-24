@@ -17,7 +17,7 @@ import (
 const Salt = "ipcipheripcipher"
 
 // Key represents a key used for encrypting and decrypting IP addresses.
-type Key [16]byte
+type Key = [16]byte
 
 // GenerateKey generates a completely random key.
 func GenerateKey(rand io.Reader) (k *Key) {
