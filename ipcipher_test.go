@@ -56,7 +56,8 @@ func TestNewKeyFromPassword(t *testing.T) {
 }
 
 func TestInvalidIPAddress(t *testing.T) {
-	ip = make([]byte, 3)
+	ip := make([]byte, 3)
+	key := new(Key)
 	if err := Encrypt(key, ip, ip); err == nil {
 		t.Errorf("Expected encrypt error for invalid IP address %x", ip)
 	}

@@ -5,18 +5,17 @@ import (
 	"testing"
 )
 
-var (
-	ip  = net.IPv4zero
-	key = new(Key)
-)
-
-func BenchmarkEncrypt(b *testing.B) {
+func BenchmarkEncryptIPv4(b *testing.B) {
+	ip := net.IPv4zero
+	key := new(Key)
 	for i := 0; i < b.N; i++ {
 		EncryptIPv4(key, ip, ip)
 	}
 }
 
-func BenchmarkDecrypt(b *testing.B) {
+func BenchmarkDecryptIPv4(b *testing.B) {
+	ip := net.IPv4zero
+	key := new(Key)
 	for i := 0; i < b.N; i++ {
 		DecryptIPv4(key, ip, ip)
 	}

@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var c = New(key)
+var c = New(new(Key))
 
 func TestIpCipher_BlockSize(t *testing.T) {
 	if c.BlockSize() != 0 {
@@ -66,5 +66,37 @@ func TestDecryptBlockMega(t *testing.T) {
 				t.Fatalf("Encryption failed for key % x; ip %s; expected %s; got %s", key[:], in, out, o)
 			}
 		}
+	}
+}
+
+func BenchmarkIpCipher_EncryptForIPv4(b *testing.B) {
+	ip := net.IPv4zero
+	c := New(new(Key))
+	for i := 0; i < b.N; i++ {
+		c.Encrypt(ip, ip)
+	}
+}
+
+func BenchmarkIpCipher_DecryptForIPv4(b *testing.B) {
+	ip := net.IPv4zero
+	c := New(new(Key))
+	for i := 0; i < b.N; i++ {
+		c.Decrypt(ip, ip)
+	}
+}
+
+func BenchmarkIpCipher_EncryptForIPv6(b *testing.B) {
+	ip := net.IPv6zero
+	c := New(new(Key))
+	for i := 0; i < b.N; i++ {
+		c.Encrypt(ip, ip)
+	}
+}
+
+func BenchmarkIpCipher_DecryptForIPv6(b *testing.B) {
+	ip := net.IPv6zero
+	c := New(new(Key))
+	for i := 0; i < b.N; i++ {
+		c.Decrypt(ip, ip)
 	}
 }
