@@ -129,10 +129,11 @@ Licence shall prevail.
 **Provision of Source Code**: When distributing or communicating copies of the
 Work, the Licensee will provide a machine-readable copy of the Source Code or
 indicate a repository where this Source will be easily and freely available for
-as long as the Licensee continues to distribute or communicate the Work.  Legal
-Protection: This Licence does not grant permission to use the trade names,
-trademarks, service marks, or names of the Licensor, except as required for
-reasonable and customary use in describing the origin of the Work and
+as long as the Licensee continues to distribute or communicate the Work.
+
+**Legal Protection**: This Licence does not grant permission to use the trade
+names, trademarks, service marks, or names of the Licensor, except as required
+for reasonable and customary use in describing the origin of the Work and
 reproducing the content of the copyright notice.
 
 ## 6. Chain of Authorship
