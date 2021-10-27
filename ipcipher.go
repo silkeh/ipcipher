@@ -50,12 +50,15 @@ func GenerateKeyFromPassword(p string) (k *Key) {
 // Dst and src may point at the same memory for in-place encryption.
 func Encrypt(key *Key, dst, src net.IP) error {
 	if ip4 := src.To4(); ip4 != nil {
-		EncryptIPv4(key, dst.To4(), ip4)
+		dst4 := dst.To4()
+		if dst4 == nil {
+			return errors.New("encrypt: dst is not an IPv4 address")
+		}
+		EncryptIPv4(key, dst4, ip4)
 		return nil
 	}
-	if src.To16() != nil {
-		EncryptIPv6(key, dst, src)
-		return nil
+	if src.To16() != nil && dst.To16() != nil {
+		return EncryptIPv6(key, dst, src)
 	}
 	return errors.New("encrypt: invalid IP address")
 }
@@ -66,12 +69,15 @@ func Encrypt(key *Key, dst, src net.IP) error {
 // Dst and src may point at the same memory for in-place decryption.
 func Decrypt(key *Key, dst, src net.IP) error {
 	if ip4 := src.To4(); ip4 != nil {
-		DecryptIPv4(key, dst.To4(), ip4)
+		dst4 := dst.To4()
+		if dst4 == nil {
+			return errors.New("decrypt: dst is not an IPv4 address")
+		}
+		DecryptIPv4(key, dst4, ip4)
 		return nil
 	}
-	if src.To16() != nil {
-		DecryptIPv6(key, dst, src)
-		return nil
+	if src.To16() != nil && dst.To16() != nil {
+		return DecryptIPv6(key, dst, src)
 	}
 	return errors.New("decrypt: invalid IP address")
 }
